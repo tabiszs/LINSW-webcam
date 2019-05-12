@@ -5,6 +5,24 @@ An image streamer over the Internet. A tornado backend is used to configure
 a JPEG image streamer using either server "push" mode, or client "get" mode.
 All communication is streamed using HTML5 websockets for maximum throughput. 
 
+Technolgies used
+----------------
+
+Client side:
+
+* jquery
+* websockets
+* HTML5
+
+Server side:
+
+* Python3 (Python2 is not supported)
+* Tornado (WebSocketHandler)
+* PIL
+* numpy
+* opencv
+
+
 Basic Installation
 ------------------
 
@@ -19,8 +37,6 @@ Test the application,
 ```bash
 tornado_image_streamer --simulate
 ```
-
-
 
 
 Linux Developer Installation
@@ -67,4 +83,21 @@ Test the application,
 
 ```bash
 tornado_image_streamer --help
+```
+
+
+Usage
+-----
+
+```bash
+$ tornado_image_streamer --help
+Usage: tornado_image_streamer [OPTIONS]
+
+  Tornado web server that streams webcam images over the network.
+
+Options:
+  -p, --port INTEGER     IP port used for the web server (default: 8888)
+  -s, --simulate         Enable simulated camera.
+  -m, --mode [get|push]  The mode of operation (default: push).
+  --help                 Show this message and exit.
 ```

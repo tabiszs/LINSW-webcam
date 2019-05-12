@@ -2,16 +2,11 @@
 # Notes: $CI_COMMIT_REF_NAME => master or branch-xyz
 #
 
-#variables:
-#    PYPI_USER: SECURE
-#    PYPI_PASSWORD: SECURE
-
-
 stages:
 #  - build
   - test
   - deploy
-  - cleanup
+#  - cleanup
 
 before_script:
   - python -V
@@ -23,8 +18,6 @@ cache:
   paths:
     - .cache/
 
-
-# Run mypy
 mypy:
   image: python:3
   stage: test
@@ -38,42 +31,22 @@ flake8:
   script:
     - tox -e flake8
 
-# Upload to pypi
-# Reference: http://samb.io/blog/2016/devops/python/gitlab/continuous-deployment/continuous-deployment-to-python-packaging
 deploy_pypi:
-  image: python:3.6
+  image: python:3
   stage: deploy
   environment: deploy
-  script:   # Configure the PyPI credentials, then push the package, and cleanup the creds.
+  script:
     - pip install -U twine
     - rm -rf dist
     - python setup.py check bdist_wheel
-
-#    - echo "[pypi]" >> ~/.pypirc
-#    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
-#    - echo "username=" ${PYPI_USER} >> ~/.pypirc
-#    - echo "password=" ${PYPI_PASSWORD} >> ~/.pypirc
-#
-#    - python setup.py check bdist_wheel
     - twine upload dist/* --verbose --skip-existing
+  only:
+    - master
 
-#    - echo "[server-login]" >> ~/.pypirc
-#    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
-#    - echo "username=" ${PYPI_USER} >> ~/.pypirc
-#    - echo "password=" ${PYPI_PASSWORD} >> ~/.pypirc
-#    - python setup.py check bdist_wheel upload # This will fail if your creds are bad.
-#    - echo "" > ~/.pypirc && rm ~/.pypirc  # If the above fails, this won't run.
-
-#  only:
-#    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
-#  except:
-#    - branches
-#  only:
-#    - master
-
-cleanup_pypirc:
-  image: python:3
-  stage: cleanup
-#   when: always   # this is important; run even if preceding stages failed.
-  script:
-    - rm -vf ~/.pypirc  # we don't want to leave these around, but GitLab may clean up anyway.
+#
+#cleanup_pypirc:
+#  image: python:3
+#  stage: cleanup
+##   when: always   # this is important; run even if preceding stages failed.
+#  script:
+#    - rm -vf ~/.pypirc  # we don't want to leave these around, but GitLab may clean up anyway.

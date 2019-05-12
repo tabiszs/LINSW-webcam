@@ -18,12 +18,10 @@ from tornado_image_streamer import image_stream_handler
               help='Enable simulated camera.')
 @click.option('-m', '--mode',  default='push',
               type=click.Choice(['get', 'push']),
-              help='The mode of operation.')
+              help='The mode of operation (default: push).')
 def main(port=8888, simulate=False, mode='push'):
     """Tornado web server that streams webcam images over the network."""
     pkg_dir = Path(__file__).absolute().parent
-    template_dir = pkg_dir.joinpath('templates')
-    static_dir = pkg_dir.joinpath('static')
 
     if simulate:
         cam = camera_utils.SimCam()
@@ -39,16 +37,15 @@ def main(port=8888, simulate=False, mode='push'):
         handlers=[
             (r"/imagestream", streamer_class),
             (r"/(.*)", image_stream_handler.IndexPageHandler, {
-                "path": template_dir,
+                "path": pkg_dir.joinpath('templates'),
                 "default_filename": "index.html",
             }),
         ],
-        static_path=static_dir,
+        static_path=pkg_dir.joinpath('static'),
         debug=True,
         camera=cam,
         sockets=[],
         stream_mode=mode,
-        template_path=template_dir,
     )
 
     if mode == 'push':
