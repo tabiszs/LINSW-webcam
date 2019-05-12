@@ -14,7 +14,7 @@ stages:
   - cleanup
 
 before_script:
-  - python -V
+  - python3 -V
   - pip install tox
   - export TZ=Europe/Amsterdam
   - date
