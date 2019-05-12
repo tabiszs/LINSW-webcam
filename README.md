@@ -23,4 +23,23 @@ Install this package,
 pip install -U -e git+https://gitlab.com/hsmit/tornado-image-streamer.git#egg=tornado_image_streamer
 ```
 
+Test the application,
+
+```bash
+python test2/src/tornado-image-streamer/tornado_image_streamer/run.py -s
+```
+
  
+ ## User Installation
+ 
+ In your current python3 environment execute the following,
+
+```bash
+pip install -U git+https://gitlab.com/hsmit/tornado-image-streamer.git#egg=tornado_image_streamer
+```
+
+Test the application,
+
+```bash
+tornado_image_streamer --help
+```
