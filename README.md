@@ -1,5 +1,9 @@
 # tornado-image-streamer
 
+An image streamer over the Internet. A tornado backend is used to configure
+a JPEG image streamer using either server "push" mode, or client "get" mode.
+All communication is streamed using HTML5 websockets for maximum throughput. 
+
 ## Linux Developer Installation
 
 Install a virtual environment,

@@ -9,9 +9,34 @@ variables:
 
 stages:
 #  - build
-#  - test
+  - test
   - deploy
   - cleanup
+
+before_script:
+  - python -V
+  - pip install tox
+  - export TZ=Europe/Amsterdam
+  - date
+
+cache:
+  paths:
+    - .cache/
+
+
+# Run mypy
+mypy:
+  image: python:3
+  stage: test
+  script:
+    - tox -e mypy
+
+
+flake8:
+  image: python:3
+  stage: test
+  script:
+    - tox -e flake8
 
 # Upload to pypi
 # Reference: http://samb.io/blog/2016/devops/python/gitlab/continuous-deployment/continuous-deployment-to-python-packaging

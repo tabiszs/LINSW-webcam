@@ -1,7 +1,7 @@
 """TBW."""
+import typing as t
 import threading
 import time
-from tornado.ioloop import PeriodicCallback
 
 import tornado.ioloop
 import tornado.web
@@ -11,15 +11,15 @@ import tornado.websocket
 class IndexPageHandler(tornado.web.RequestHandler):
     """The index.html HTML generation handler."""
 
-    # def __init__(self, application, request, **kwargs):
-    #     self._path = ''
-    #     super(IndexPageHandler, self).__init__(application, request, **kwargs)
+    def __init__(self, application, request, **kwargs):
+        """TBW."""
+        self._path = kwargs.pop("path")
+        self.default_filename = kwargs.pop("default_filename")
+        super(IndexPageHandler, self).__init__(application, request, **kwargs)
 
     def get(self, *args, **kwargs):
-        """TBW"""
-        self._path = str(self.application.settings["template_path"])
-        # self.render(self.application.settings["template_path"].joinpath("index.html"))
-        self.render("index.html", app=self.application)
+        """TBW."""
+        self.render(self.default_filename, app=self.application)
 
 
 class ImageStreamHandler(tornado.websocket.WebSocketHandler):
@@ -46,7 +46,7 @@ class ImageStreamHandler(tornado.websocket.WebSocketHandler):
 class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
     """TBW."""
 
-    images = []
+    images = []  # type: t.List[ImagePushStreamHandler]
     interval = 1
 
     def __init__(self, *args, **kwargs):
@@ -54,7 +54,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
         self.counter = 0
         super().__init__(*args, **kwargs)
         self.application.settings['sockets'].append(self)
-        PeriodicCallback(self._write_queue, 1).start()
+        tornado.ioloop.PeriodicCallback(self._write_queue, 1).start()
 
     @staticmethod
     def start_read_image_loop(application):
@@ -84,7 +84,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
             image = self.images.pop()
             try:
                 self.write_message(image, binary=True)
-            except tornado.websocket.WebSocketClosedError as exc:
+            except tornado.websocket.WebSocketClosedError:
                 self.close()
                 socks = self.application.settings['sockets']
                 if self in socks:
