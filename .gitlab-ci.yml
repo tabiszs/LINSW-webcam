@@ -45,9 +45,15 @@ deploy_pypi:
   stage: deploy
   environment: deploy
   script:   # Configure the PyPI credentials, then push the package, and cleanup the creds.
-    - pip install twine
+    - pip install -U twine
+    - rm -rf dist
+    - echo "[pypi]" >> ~/.pypirc
+    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
+    - echo "${PYPI_USER}" >> ~/.pypirc
+    - echo "${PYPI_PASSWORD}" >> ~/.pypirc
+
     - python setup.py check bdist_wheel
-    - twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD} --verbose --skip-existing
+    - twine upload dist/* --verbose --skip-existing
 
 #    - echo "[server-login]" >> ~/.pypirc
 #    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc

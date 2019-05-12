@@ -10,9 +10,17 @@ Basic Installation
 
 Activate a Python virtual environment and execute the following command,
     
-```
+```bash
 pip install tornado-image-streamer
 ```
+
+Test the application,
+
+```bash
+tornado_image_streamer --simulate
+```
+
+
 
 
 Linux Developer Installation
