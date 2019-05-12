@@ -29,7 +29,7 @@ Basic Installation
 Activate a Python virtual environment and execute the following command,
     
 ```bash
-pip install tornado-image-streamer
+pip install -U tornado-image-streamer
 ```
 
 Test the application,
