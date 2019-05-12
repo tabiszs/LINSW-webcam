@@ -1,11 +1,11 @@
 """TBW."""
 from pathlib import Path
 
+import click
+
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
-
-import click
 
 from tornado_image_streamer import camera_utils
 from tornado_image_streamer import image_stream_handler
@@ -16,13 +16,12 @@ from tornado_image_streamer import image_stream_handler
               help='IP port used for the web server (default: 8888)')
 @click.option('-s', '--simulate', is_flag=True,
               help='Enable simulated camera.')
-@click.option('-m', '--mode',  default='push', type=click.Choice(['get', 'push']),
-              help='The mode of operation.')
+@click.option('-m', '--mode',  default='push',
+              type=click.Choice(['get', 'push']),
+              help='The mode of operation (default: push).')
 def main(port=8888, simulate=False, mode='push'):
-    """TBW."""
+    """Tornado web server that streams webcam images over the network."""
     pkg_dir = Path(__file__).absolute().parent
-    template_dir = pkg_dir.joinpath('templates')
-    static_dir  = pkg_dir.joinpath('static')
 
     if simulate:
         cam = camera_utils.SimCam()
@@ -37,19 +36,20 @@ def main(port=8888, simulate=False, mode='push'):
     app = tornado.web.Application(
         handlers=[
             (r"/imagestream", streamer_class),
-            (r"/(.*)", tornado.web.StaticFileHandler, {
-                "path": str(template_dir),
-                "default_filename": "index.html"
+            (r"/(.*)", image_stream_handler.IndexPageHandler, {
+                "path": pkg_dir.joinpath('templates'),
+                "default_filename": "index.html",
             }),
         ],
-        static_path=static_dir,
+        static_path=pkg_dir.joinpath('static'),
         debug=True,
         camera=cam,
         sockets=[],
+        stream_mode=mode,
     )
 
     if mode == 'push':
-        image_stream_handler.ImagePushStreamHandler.start_read_image_loop(application=app)
+        streamer_class.start_read_image_loop(application=app)
 
     app.listen(port)
     print('http://localhost:8888')
@@ -58,4 +58,3 @@ def main(port=8888, simulate=False, mode='push'):
 
 if __name__ == "__main__":
     main()
-

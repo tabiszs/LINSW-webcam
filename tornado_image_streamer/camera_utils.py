@@ -1,6 +1,7 @@
 """TBW."""
 from io import BytesIO
 
+import numpy as np
 from PIL import Image
 import cv2
 
@@ -17,20 +18,22 @@ def convert_raw_image(raw):
 
 class SimCam:
     """TBW."""
+
     counter = 0
     colors = [0.5, 0.75, 1.0]
 
     @staticmethod
     def simulate_image(w, h, dtype='uint16', shift=0, rgb=False):
-        """ Generate a 2d array of concentric circles.
+        """Generate a 2d array of concentric circles.
+
         :param int w: the width in pixels
         :param int h: the height in pixels.
         :param str dtype: the pixel value data type
         :param int shift: the number of pixels to shift the final image.
         :param bool rgb: return a RGB (color) array.
         :return: a 2d numpy array of type uint8
-        :rtype: ndarray"""
-        import numpy as np
+        :rtype: ndarray
+        """
         dx = 20.0 / w
         dy = 20.0 / h
         x = np.arange(-10, 10, dx)
@@ -62,7 +65,10 @@ class SimCam:
     def read(self):
         """TBW."""
         SimCam.counter += 1
-        data = SimCam.simulate_image(640, 480, dtype='uint8', shift=SimCam.counter, rgb=True)
+        data = SimCam.simulate_image(640, 480,
+                                     dtype='uint8',
+                                     shift=SimCam.counter,
+                                     rgb=True)
         return True, data
 
     def read_image(self):
@@ -72,9 +78,11 @@ class SimCam:
 
 
 class WebCam(cv2.VideoCapture):
+    """TBW."""
 
-    def __init__(self, propId=0):
-        super().__init__(propId)
+    def __init__(self, prop_id=0):
+        """TBW."""
+        super().__init__(prop_id)
 
     def read(self):
         """TBW."""
