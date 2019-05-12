@@ -45,18 +45,23 @@ deploy_pypi:
   stage: deploy
   environment: deploy
   script:   # Configure the PyPI credentials, then push the package, and cleanup the creds.
-    - echo "[server-login]" >> ~/.pypirc
-    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
-    - echo "username=" ${PYPI_USER} >> ~/.pypirc
-    - echo "password=" ${PYPI_PASSWORD} >> ~/.pypirc
-    - python setup.py check bdist_wheel upload # This will fail if your creds are bad.
-    - echo "" > ~/.pypirc && rm ~/.pypirc  # If the above fails, this won't run.
+    - pip install twine
+    - python setup.py check bdist_wheel
+    - twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD} --verbose --skip-existing
+
+#    - echo "[server-login]" >> ~/.pypirc
+#    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
+#    - echo "username=" ${PYPI_USER} >> ~/.pypirc
+#    - echo "password=" ${PYPI_PASSWORD} >> ~/.pypirc
+#    - python setup.py check bdist_wheel upload # This will fail if your creds are bad.
+#    - echo "" > ~/.pypirc && rm ~/.pypirc  # If the above fails, this won't run.
+
 #  only:
 #    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
 #  except:
 #    - branches
-  only:
-    - master
+#  only:
+#    - master
 
 cleanup_pypirc:
   image: python:3
