@@ -30,6 +30,7 @@ from setuptools import setup
 #
 # orig.upload_file = upload_file_ignore_conflict
 
+import tornado_image_streamer
 
-setup()
+setup(version=tornado_image_streamer.__version__)
 

@@ -2,9 +2,9 @@
 # Notes: $CI_COMMIT_REF_NAME => master or branch-xyz
 #
 
-variables:
-    PYPI_USER: SECURE
-    PYPI_PASSWORD: SECURE
+#variables:
+#    PYPI_USER: SECURE
+#    PYPI_PASSWORD: SECURE
 
 
 stages:
@@ -47,12 +47,14 @@ deploy_pypi:
   script:   # Configure the PyPI credentials, then push the package, and cleanup the creds.
     - pip install -U twine
     - rm -rf dist
-    - echo "[pypi]" >> ~/.pypirc
-    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
-    - echo "username=" ${PYPI_USER} >> ~/.pypirc
-    - echo "password=" ${PYPI_PASSWORD} >> ~/.pypirc
-
     - python setup.py check bdist_wheel
+
+#    - echo "[pypi]" >> ~/.pypirc
+#    - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
+#    - echo "username=" ${PYPI_USER} >> ~/.pypirc
+#    - echo "password=" ${PYPI_PASSWORD} >> ~/.pypirc
+#
+#    - python setup.py check bdist_wheel
     - twine upload dist/* --verbose --skip-existing
 
 #    - echo "[server-login]" >> ~/.pypirc
