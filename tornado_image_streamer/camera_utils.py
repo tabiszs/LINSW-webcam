@@ -62,7 +62,7 @@ class SimCam:
     def read(self):
         """TBW."""
         SimCam.counter += 1
-        data = SimCam.simulate_image(640, 480, dtype='uint8', shift=SimCamera.counter, rgb=True)
+        data = SimCam.simulate_image(640, 480, dtype='uint8', shift=SimCam.counter, rgb=True)
         return True, data
 
     def read_image(self):

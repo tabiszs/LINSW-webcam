@@ -25,7 +25,7 @@ def main(port=8888, simulate=False, mode='push'):
     static_dir  = pkg_dir.joinpath('static')
 
     if simulate:
-        cam = camera_utils.SimCam(),
+        cam = camera_utils.SimCam()
     else:
         cam = camera_utils.WebCam()
 
