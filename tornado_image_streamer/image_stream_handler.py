@@ -48,6 +48,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
 
     images = []  # type: t.List[ImagePushStreamHandler]
     interval = 1
+    stop = False
 
     def __init__(self, *args, **kwargs):
         """TBW."""
@@ -68,7 +69,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
     def read_image_loop(application):
         """TBW."""
         cam = application.settings['camera']
-        while True:
+        while not ImagePushStreamHandler.stop:
             interval = float(ImagePushStreamHandler.interval) / 1000.0
             if interval > 0:
                 if len(application.settings['sockets']):

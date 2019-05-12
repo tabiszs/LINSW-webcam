@@ -54,7 +54,13 @@ def main(port=8888, simulate=False, mode='push'):
 
     app.listen(port)
     print('http://localhost:8888')
-    tornado.ioloop.IOLoop.current().start()
+    try:
+        tornado.ioloop.IOLoop.current().start()
+    finally:
+        print('stopping...')
+        if mode == 'push':
+            streamer_class.stop = True
+        tornado.ioloop.IOLoop.instance().stop()
 
 
 if __name__ == "__main__":
