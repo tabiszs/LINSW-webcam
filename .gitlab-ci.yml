@@ -14,7 +14,7 @@ stages:
   - cleanup
 
 before_script:
-  - python3 -V
+  - python -V
   - pip install tox
   - export TZ=Europe/Amsterdam
   - date
@@ -59,7 +59,8 @@ deploy_pypi:
     - master
 
 cleanup_pypirc:
-   stage: cleanup
+  image: python:3
+  stage: cleanup
 #   when: always   # this is important; run even if preceding stages failed.
-   script:
+  script:
     - rm -vf ~/.pypirc  # we don't want to leave these around, but GitLab may clean up anyway.
