@@ -57,8 +57,8 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
         while True:
             interval = float(ImagePushStreamHandler.interval) / 1000.0
             if len(application.settings['sockets']):
-                ok, raw = cam.read()
-                ImagePushStreamHandler.images.append(raw)
+                image = cam.read_image()
+                ImagePushStreamHandler.images.append(image)
             time.sleep(interval)
 
     def _write_queue(self):
