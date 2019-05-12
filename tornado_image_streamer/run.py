@@ -41,6 +41,7 @@ def main(port=8888, simulate=False, mode='push'):
                 "default_filename": "index.html",
             }),
         ],
+        template_path=pkg_dir.joinpath('templates'),
         static_path=pkg_dir.joinpath('static'),
         debug=True,
         camera=cam,
