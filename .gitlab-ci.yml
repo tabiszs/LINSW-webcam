@@ -49,8 +49,8 @@ deploy_pypi:
     - rm -rf dist
     - echo "[pypi]" >> ~/.pypirc
     - echo "repository=https://upload.pypi.org/legacy/" >> ~/.pypirc
-    - echo "${PYPI_USER}" >> ~/.pypirc
-    - echo "${PYPI_PASSWORD}" >> ~/.pypirc
+    - echo "username=" ${PYPI_USER} >> ~/.pypirc
+    - echo "password=" ${PYPI_PASSWORD} >> ~/.pypirc
 
     - python setup.py check bdist_wheel
     - twine upload dist/* --verbose --skip-existing
