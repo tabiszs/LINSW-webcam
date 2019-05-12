@@ -13,6 +13,7 @@ $(document).ready(function() {
             $('#actual').text(fps);
         }
     }
+
     $('#fps').on('change', function() {
         var cmd = 'interval=' + $(this).val();
         console.log(cmd)
@@ -22,11 +23,20 @@ $(document).ready(function() {
     ws_imagestream = new_web_socket('imagestream');
 
     ws_imagestream.onmessage = function(e) {
-        update_fps()
-        image.src = URL.createObjectURL(e.data);
-        image.onload = function() {
-            URL.revokeObjectURL(image.src);
+        var interval = parseInt($('#fps').val());
+        if (e.data instanceof Blob) {
+            if (interval > 0) {
+                update_fps()
+                image.src = URL.createObjectURL(e.data);
+                image.onload = function() {
+                    URL.revokeObjectURL(image.src);
+                }
+            }
         }
+        if (window.stream_mode == "get") {
+            setTimeout(function(){ws_imagestream.send('?')}, interval);
+        }
+    }
 /*
         interval = parseInt(document.getElementById('fps').value);
         if (interval > 0) {
@@ -51,8 +61,8 @@ $(document).ready(function() {
             cmd = 'pause';
         }
         setTimeout(function(){ws_imagestream.send(cmd)}, interval);
-*/
     }
+*/
     ws_imagestream.onopen = function() {
         console.log('connected ws_imagestream...');
         ws_imagestream.send('?');

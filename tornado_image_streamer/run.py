@@ -37,15 +37,18 @@ def main(port=8888, simulate=False, mode='push'):
     app = tornado.web.Application(
         handlers=[
             (r"/imagestream", streamer_class),
-            (r"/(.*)", tornado.web.StaticFileHandler, {
-                "path": str(template_dir),
-                "default_filename": "index.html"
-            }),
+            (r"/(.*)", image_stream_handler.IndexPageHandler),
+            # (r"/(.*)", tornado.web.StaticFileHandler, {
+            #     "path": str(template_dir),
+            #     "default_filename": "index.html"
+            # }),
         ],
         static_path=static_dir,
         debug=True,
         camera=cam,
         sockets=[],
+        stream_mode=mode,
+        template_path=template_dir,
     )
 
     if mode == 'push':

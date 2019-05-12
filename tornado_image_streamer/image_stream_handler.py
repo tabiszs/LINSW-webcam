@@ -8,6 +8,20 @@ import tornado.web
 import tornado.websocket
 
 
+class IndexPageHandler(tornado.web.RequestHandler):
+    """The index.html HTML generation handler."""
+
+    # def __init__(self, application, request, **kwargs):
+    #     self._path = ''
+    #     super(IndexPageHandler, self).__init__(application, request, **kwargs)
+
+    def get(self, *args, **kwargs):
+        """TBW"""
+        self._path = str(self.application.settings["template_path"])
+        # self.render(self.application.settings["template_path"].joinpath("index.html"))
+        self.render("index.html", app=self.application)
+
+
 class ImageStreamHandler(tornado.websocket.WebSocketHandler):
     """TBW."""
 
@@ -56,9 +70,12 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
         cam = application.settings['camera']
         while True:
             interval = float(ImagePushStreamHandler.interval) / 1000.0
-            if len(application.settings['sockets']):
-                image = cam.read_image()
-                ImagePushStreamHandler.images.append(image)
+            if interval > 0:
+                if len(application.settings['sockets']):
+                    image = cam.read_image()
+                    ImagePushStreamHandler.images.append(image)
+            else:
+                interval = 1.0  # paused
             time.sleep(interval)
 
     def _write_queue(self):
