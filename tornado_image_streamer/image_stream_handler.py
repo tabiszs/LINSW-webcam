@@ -25,10 +25,17 @@ class IndexPageHandler(tornado.web.RequestHandler):
 class ImageStreamHandler(tornado.websocket.WebSocketHandler):
     """TBW."""
 
+    stop = False  # unused, for API compatibility with ImagePushStreamHandler
+
     def __init__(self, *args, **kwargs):
         """TBW."""
         self.counter = 0
         super().__init__(*args, **kwargs)
+
+    @staticmethod
+    def start(application):
+        """TBW."""
+        pass  # unused, for API compatibility with ImagePushStreamHandler
 
     def on_message(self, message):
         """TBW."""
@@ -58,7 +65,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
         tornado.ioloop.PeriodicCallback(self._write_queue, 1).start()
 
     @staticmethod
-    def start_read_image_loop(application):
+    def start(application):
         """TBW."""
         th = threading.Thread(target=ImagePushStreamHandler.read_image_loop,
                               args=(application,),
@@ -78,6 +85,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
             else:
                 interval = 1.0  # paused
             time.sleep(interval)
+        print('Exiting ImagePushStreamHandler.read_image_loop')
 
     def _write_queue(self):
         """TBW."""

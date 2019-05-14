@@ -1,6 +1,6 @@
 """TBW."""
 from pathlib import Path
-
+import threading
 import click
 
 import tornado.ioloop
@@ -11,9 +11,28 @@ from tornado_image_streamer import camera_utils
 from tornado_image_streamer import image_stream_handler
 
 
+def stop_application(app):
+    """TBW."""
+    print('Stopping...')
+    app.settings['streamer_class'].stop = True
+    tornado.ioloop.IOLoop.instance().stop()
+    while len(app.settings['sockets']):
+        print('Closing socket...')
+        app.settings['sockets'].pop().close()
+
+    for th in threading.enumerate():
+        if th is not threading.main_thread() \
+                and not th.name.startswith('pydevd'):
+            print('Waiting for thread: %s' % th.name)
+            th.join(timeout=5.0)
+            if th.is_alive():
+                print('Failed to join thread: %s' % th.name)
+    print('Exiting main')
+
+
 @click.command()
-@click.option('-p', '--port', default=8888,
-              help='IP port used for the web server (default: 8888)')
+@click.option('-p', '--port', default=0,
+              help='IP port used for the web server (default: 0)')
 @click.option('-s', '--simulate', is_flag=True,
               help='Enable simulated camera.')
 @click.option('-m', '--mode',  default='push',
@@ -47,20 +66,19 @@ def main(port=8888, simulate=False, mode='push'):
         camera=cam,
         sockets=[],
         stream_mode=mode,
+        streamer_class=streamer_class,
     )
 
-    if mode == 'push':
-        streamer_class.start_read_image_loop(application=app)
+    app.settings['streamer_class'].start(application=app)
+    server = app.listen(port)
+    if port == 0:
+        port = list(server._sockets.values())[0].getsockname()[1]
 
-    app.listen(port)
-    print('http://localhost:8888')
+    print('http://localhost:%s' % port)
     try:
         tornado.ioloop.IOLoop.current().start()
     finally:
-        print('stopping...')
-        if mode == 'push':
-            streamer_class.stop = True
-        tornado.ioloop.IOLoop.instance().stop()
+        stop_application(app)
 
 
 if __name__ == "__main__":
