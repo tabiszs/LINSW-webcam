@@ -1,6 +1,5 @@
 """TBW."""
 from pathlib import Path
-import threading
 import click
 
 import tornado.ioloop
@@ -9,25 +8,8 @@ import tornado.websocket
 
 from tornado_image_streamer import camera_utils
 from tornado_image_streamer import image_stream_handler
-
-
-def stop_application(app):
-    """TBW."""
-    print('Stopping...')
-    app.settings['streamer_class'].stop = True
-    tornado.ioloop.IOLoop.instance().stop()
-    while len(app.settings['sockets']):
-        print('Closing socket...')
-        app.settings['sockets'].pop().close()
-
-    for th in threading.enumerate():
-        if th is not threading.main_thread() \
-                and not th.name.startswith('pydevd'):
-            print('Waiting for thread: %s' % th.name)
-            th.join(timeout=5.0)
-            if th.is_alive():
-                print('Failed to join thread: %s' % th.name)
-    print('Exiting main')
+from tornado_image_streamer import tornado_utils
+from tornado_image_streamer import __version__
 
 
 @click.command()
@@ -38,19 +20,23 @@ def stop_application(app):
 @click.option('-m', '--mode',  default='push',
               type=click.Choice(['get', 'push']),
               help='The mode of operation (default: push).')
-def main(port=8888, simulate=False, mode='push'):
+@click.option('-v', '--verbosity', count=True, help='The verbosity level.')
+@click.version_option(version=__version__)
+def main(port=8888, simulate=False, mode='push', verbosity=0):
     """Tornado web server that streams webcam images over the network."""
+    tornado_utils.config_logging(verbosity)
+
     pkg_dir = Path(__file__).absolute().parent
 
-    if simulate:
-        cam = camera_utils.SimCam()
-    else:
-        cam = camera_utils.WebCam()
+    camera_class = [
+        camera_utils.WebCam,
+        camera_utils.SimCam
+    ][simulate]
 
-    if mode == 'push':
-        streamer_class = image_stream_handler.ImagePushStreamHandler
-    else:
-        streamer_class = image_stream_handler.ImageStreamHandler
+    streamer_class = {
+        'push': image_stream_handler.ImagePushStreamHandler,
+        'get': image_stream_handler.ImageStreamHandler,
+    }[mode]
 
     app = tornado.web.Application(
         handlers=[
@@ -63,22 +49,20 @@ def main(port=8888, simulate=False, mode='push'):
         template_path=pkg_dir.joinpath('templates'),
         static_path=pkg_dir.joinpath('static'),
         debug=True,
-        camera=cam,
+        camera=camera_class(),
         sockets=[],
+        timers=[],
         stream_mode=mode,
-        streamer_class=streamer_class,
     )
 
-    app.settings['streamer_class'].start(application=app)
+    streamer_class.start(application=app)
     server = app.listen(port)
-    if port == 0:
-        port = list(server._sockets.values())[0].getsockname()[1]
-
-    print('http://localhost:%s' % port)
+    tornado_utils.log_url(server)
     try:
         tornado.ioloop.IOLoop.current().start()
     finally:
-        stop_application(app)
+        streamer_class.stop()
+        tornado_utils.stop_application(app.settings['sockets'])
 
 
 if __name__ == "__main__":
