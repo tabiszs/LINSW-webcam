@@ -6,3 +6,4 @@ include requirements.txt
 recursive-include tornado_image_streamer *.css
 recursive-include tornado_image_streamer *.html
 recursive-include tornado_image_streamer *.js
+recursive-include tornado_image_streamer *.ico
