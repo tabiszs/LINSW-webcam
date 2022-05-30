@@ -5,32 +5,41 @@
     <meta charset="utf-8"/>
     <script src="/static/jquery-3.1.1.min.js"></script>
     <script src="/static/ws_streamer.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
     <title>Tornado Image Streamer</title>
 </head>
 
 <body>
-FPS:
-<select id="fps">
-    <option value="1">Max</option>
-    <option value="10">100 FPS</option>
-    <option value="20">50 FPS</option>
-    <option value="40">25 FPS</option>
-    <option value="50">20 FPS</option>
-    <option value="66">15 FPS</option>
-    <option value="100">10 FPS</option>
-    <option value="200">5 FPS</option>
-    <option value="1000">1 FPS</option>
-    <option value="-1">Pause</option>
-</select>
-
-Actual:
-<span id="actual"></span>
-<br/>
-
-<img id="image" src=""/>
-
-<script>
-window.stream_mode = "{{ app.settings["stream_mode"] }}";
-</script>
+    <br>
+    <h1 class="title">Tornado Image Streamer</h1>
+    <div class="container-fluid">
+        <div class="row" align="center">
+            FPS:
+            <select id="fps">
+                <option value="1">Max</option>
+                <option value="10">100 FPS</option>
+                <option value="20">50 FPS</option>
+                <option value="40">25 FPS</option>
+                <option value="50">20 FPS</option>
+                <option value="66">15 FPS</option>
+                <option value="100">10 FPS</option>
+                <option value="200">5 FPS</option>
+                <option value="1000">1 FPS</option>
+                <option value="-1">Pause</option>
+            </select>
+            
+            Actual:
+            <span id="actual"></span>
+            <br/>
+            
+            <img id="image" src=""/>
+            
+            <script>
+            window.stream_mode = "{{ app.settings['stream_mode'] }}";
+            </script>
+        </div>
+    </div>
 </body>
 </html>
