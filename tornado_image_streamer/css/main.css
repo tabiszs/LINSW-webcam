@@ -19,12 +19,12 @@
     padding: 10px;
 }
 
-p {
+p, span {
     text-indent: 50px;
-    text-align: center;
     letter-spacing: 2px;
     text-emphasis-position: inherit;
     font-size: 20px;
+    vertical-align: middle;
     color: #EEEEEE;
     padding: 10px;
 }
@@ -32,4 +32,14 @@ p {
 .btn.btn-primary.my {
     font-size:20px;
     padding:10px;
+    min-width: 4cm;
+}
+
+.my-align {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.select {
+    max-width: 6cm;
 }

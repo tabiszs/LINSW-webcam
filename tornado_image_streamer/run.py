@@ -1,4 +1,5 @@
 """TBW."""
+import os
 from pathlib import Path
 import click
 
@@ -10,7 +11,6 @@ from tornado_image_streamer import camera_utils
 from tornado_image_streamer import image_stream_handler
 from tornado_image_streamer import tornado_utils
 from tornado_image_streamer import __version__
-
 
 @click.command()
 @click.option('-p', '--port', default=0,
@@ -38,16 +38,20 @@ def main(port=8888, simulate=False, mode='push', verbosity=0):
         'get': image_stream_handler.ImageStreamHandler,
     }[mode]
 
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    
     app = tornado.web.Application(
         handlers=[
             (r"/imagestream", streamer_class),
-            (r"/(.*)", image_stream_handler.IndexPageHandler, {
-                "path": pkg_dir.joinpath('templates'),
+            (r"/", image_stream_handler.IndexPageHandler, {
+                "path": pkg_dir.joinpath('www'),
                 "default_filename": "index.html",
             }),
+            (r'/(?:image)/(.*)', tornado.web.StaticFileHandler, {'path': pkg_dir.joinpath('image')}),
+            (r'/(?:css)/(.*)', tornado.web.StaticFileHandler, {'path': pkg_dir.joinpath('css')}),
+            (r'/(?:js)/(.*)', tornado.web.StaticFileHandler, {'path': pkg_dir.joinpath('js')})
         ],
-        template_path=pkg_dir.joinpath('templates'),
-        static_path=pkg_dir.joinpath('static'),
+        template_path=pkg_dir.joinpath('www'),
         debug=True,
         camera=camera_class(),
         sockets=[],
@@ -58,6 +62,8 @@ def main(port=8888, simulate=False, mode='push', verbosity=0):
     streamer_class.start(application=app)
     server = app.listen(port)
     tornado_utils.log_url(server)
+    aa=pkg_dir.joinpath('image')
+    print(aa)
     try:
         tornado.ioloop.IOLoop.current().start()
     finally:

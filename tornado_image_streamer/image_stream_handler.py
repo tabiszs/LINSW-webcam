@@ -1,5 +1,6 @@
 """TBW."""
 # import typing as t
+import os
 import threading
 import time
 import asyncio
@@ -11,6 +12,7 @@ import tornado.websocket
 
 
 logger = logging.getLogger(__name__)
+html_page_path = dir_path = os.path.dirname(os.path.realpath(__file__)) + '/www/'
 
 
 class IndexPageHandler(tornado.web.RequestHandler):
@@ -20,11 +22,22 @@ class IndexPageHandler(tornado.web.RequestHandler):
         """TBW."""
         self._path = kwargs.pop("path")
         self.default_filename = kwargs.pop("default_filename", "index.html")
+        self.index_page = os.path.join(self._path, self.default_filename)
         super(IndexPageHandler, self).__init__(application, request, **kwargs)
 
+    @tornado.web.asynchronous
     def get(self, *args, **kwargs):
-        """TBW."""
-        self.render(self.default_filename, app=self.application)
+        # Check if page exists
+        index_page = os.path.join(html_page_path, self.file_name)
+        if os.path.exists(index_page):
+            # Render it
+            self.render('www/' + self.file_name)
+        else:
+            # Page not found, generate template
+            err_tmpl = tornado.template.Template("<html> Err 404, Page {{ name }} not found</html>")
+            err_html = err_tmpl.generate(name=self.file_name)
+            # Send response
+            self.finish(err_html)
 
 
 class ImageStreamHandler(tornado.websocket.WebSocketHandler):
