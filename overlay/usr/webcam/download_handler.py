@@ -9,16 +9,16 @@ from led import Led;
 
 
 class PhotoHandler(tornado.web.RequestHandler):
-    led = Led()
+    led = Led('photo')
 
     def get(self):        
         try:       
             cam = self.application.settings['camera']
-            self.led.on('green')
+            self.led.on()
             cam.open()
             path2 = os.path.dirname(os.path.realpath(__file__)) + '/image'  
             filename = cam.save_image(path2)
-            self.led.off('green')
+            self.led.off()
             self.write(filename)
             self.finish()
         except:

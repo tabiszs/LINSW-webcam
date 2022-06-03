@@ -1,4 +1,5 @@
-"""TBW."""
+#!/usr/bin/python3
+"""ST."""
 import os
 from pathlib import Path
 import click

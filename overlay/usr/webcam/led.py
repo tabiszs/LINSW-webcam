@@ -6,23 +6,19 @@ import time
 class Led:
     red_on = False
     green_on = False
+    line = 0
 
-    def __init__(self):
+    def __init__(self, type):
         self._chip = gpiod.Chip('gpiochip0')
-        self._red = self._chip.get_line(13)
-        self._green = self._chip.get_line(12)
-        self._red.request(consumer="webcam", type=gpiod.LINE_REQ_DIR_OUT)
-        self._green.request(consumer="webcam", type=gpiod.LINE_REQ_DIR_OUT)
+        if type == 'stream' :
+            self.line = 13
+        elif type == 'photo' :
+            self.line = 12
+        self.io = self._chip.get_line(self.line)
+        self.io.request(consumer=type, type=gpiod.LINE_REQ_DIR_OUT)     
 
-    def on(self, type):
-        if type == 'red':
-            self._red.set_value(1)
-        if type == 'green':
-            self._green.set_value(1)
+    def on(self):
+        self.io.set_value(1)
     
-    def off(self, type):
-        if type == 'red':
-            self._red.set_value(0)
-        if type == 'green':
-            self._green.set_value(0)
-
+    def off(self):
+        self.io.set_value(0)
