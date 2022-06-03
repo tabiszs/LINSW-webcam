@@ -11,6 +11,7 @@ import tornado.web
 import tornado.websocket
 
 from camera_utils import WebCam
+from led import Led
 
 
 logger = logging.getLogger(__name__)
@@ -87,6 +88,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
     interval = 40
     stop_event = threading.Event()
     cam = WebCam()
+    led = Led()
 
     def __init__(self, *args, **kwargs):
         """TBW."""
@@ -95,6 +97,7 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
         self.images = []
         self._periodic = tornado.ioloop.PeriodicCallback(self._write_queue, 40)
         self.cam.open()
+        self.led.on('red')
         self._periodic.start()
         self.application.settings['sockets'].append(self)
 
@@ -108,7 +111,8 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
         except ValueError:
             pass
         finally:
-            self.cam.release()    
+            self.cam.release()
+            self.led.off('red')   
 
     @staticmethod
     def start(application):
