@@ -28,20 +28,18 @@ class IndexPageHandler(tornado.web.RequestHandler):
         self.index_page = os.path.join(self._path, self.default_filename)
         super(IndexPageHandler, self).__init__(application, request, **kwargs)
 
-    @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def get(self, *args, **kwargs):
         # Check if page exists
         index_page = os.path.join(html_page_path, self.default_filename)
         if os.path.exists(index_page):
-            # Render it
-            print(self.index_page)
-            self.render(self.index_page, app=self.application)
+            yield self.render(self.index_page, app=self.application)
         else:
             # Page not found, generate template
-            err_tmpl = tornado.template.Template("<html> Err 404, Page {{ name }} not found</html>")
-            err_html = err_tmpl.generate(name=self.index_page)
+            err_tmpl = yield tornado.template.Template("<html> Err 404, Page {{ name }} not found</html>")
+            err_html = yield err_tmpl.generate(name=self.index_page)
             # Send response
-            self.finish(err_html)
+            yield self.finish(err_html)
 
 
 class ImageStreamHandler(tornado.websocket.WebSocketHandler):

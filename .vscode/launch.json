@@ -8,7 +8,7 @@
             "name": "Python: run.py",
             "type": "python",
             "request": "launch",
-            "program": "./tornado_image_streamer/run.py",
+            "program": "./overlay/usr/webcam/run.py",
             "console": "integratedTerminal",
             "args": ["-p 8888", "--mode",  "push"],
             "justMyCode": true

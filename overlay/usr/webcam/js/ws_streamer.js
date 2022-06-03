@@ -59,12 +59,12 @@ $(document).ready(function() {
         if(is_stream == 0)
         {
             console.log('start stream'); 
-            is_stream = 1;
-            ws_imagestream = set_web_socket();
+            is_stream = 1;            
             stream.innerText = 'Stop Stream'
             stream.style.backgroundColor = '#dc3545';
             stream.style.borderColor = '#dc3545';
             stream_view.style.display = 'block';
+            ws_imagestream = set_web_socket();
         }
         else
         {
@@ -86,6 +86,7 @@ function set_web_socket() {
         var interval = parseInt($('#fps').val());
         if (e.data instanceof Blob) {
             update_fps()
+            image = document.getElementById('image')
             image.src = URL.createObjectURL(e.data);
             image.onload = function() {
                 URL.revokeObjectURL(image.src);
