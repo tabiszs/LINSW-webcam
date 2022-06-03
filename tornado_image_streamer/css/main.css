@@ -43,3 +43,7 @@ p, span {
 .select {
     max-width: 6cm;
 }
+
+.hidden {
+    display: none;
+}

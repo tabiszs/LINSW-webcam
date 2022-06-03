@@ -10,6 +10,8 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
+from camera_utils import WebCam
+
 
 logger = logging.getLogger(__name__)
 html_page_path = dir_path = os.path.dirname(os.path.realpath(__file__)) + '/www/'
@@ -28,33 +30,37 @@ class IndexPageHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     def get(self, *args, **kwargs):
         # Check if page exists
-        index_page = os.path.join(html_page_path, self.file_name)
+        index_page = os.path.join(html_page_path, self.default_filename)
         if os.path.exists(index_page):
             # Render it
-            self.render('www/' + self.file_name)
+            print(self.index_page)
+            self.render(self.index_page, app=self.application)
         else:
             # Page not found, generate template
             err_tmpl = tornado.template.Template("<html> Err 404, Page {{ name }} not found</html>")
-            err_html = err_tmpl.generate(name=self.file_name)
+            err_html = err_tmpl.generate(name=self.index_page)
             # Send response
             self.finish(err_html)
 
 
 class ImageStreamHandler(tornado.websocket.WebSocketHandler):
     """TBW."""
+    cam = WebCam()
 
     def __init__(self, *args, **kwargs):
         """TBW."""
         self.counter = 0
+        self.cam.open()
         super().__init__(*args, **kwargs)
 
     def on_connection_close(self):
         """TBW."""
         self.close()
+        self.cam.release()
 
     @staticmethod
     def start(application):
-        """TBW."""
+        """ST."""
         pass  # unused, for API compatibility with ImagePushStreamHandler
 
     @staticmethod
@@ -67,7 +73,7 @@ class ImageStreamHandler(tornado.websocket.WebSocketHandler):
         self.counter += 1
         try:
             if message == '?':
-                image = self.application.settings['camera'].read_image()
+                image = self.cam.read_image()
                 await self.write_message(image, binary=True)
             else:
                 await self.write_message(message)  # echo
@@ -78,9 +84,9 @@ class ImageStreamHandler(tornado.websocket.WebSocketHandler):
 class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
     """TBW."""
 
-    # images = []  # type: t.List[ImagePushStreamHandler]
-    interval = 1
+    interval = 40
     stop_event = threading.Event()
+    cam = WebCam()
 
     def __init__(self, *args, **kwargs):
         """TBW."""
@@ -88,18 +94,21 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
         self.counter = 0
         self.images = []
         self._periodic = tornado.ioloop.PeriodicCallback(self._write_queue, 40)
+        self.cam.open()
         self._periodic.start()
         self.application.settings['sockets'].append(self)
 
     def on_connection_close(self):
         """TBW."""
-        logger.info('Closing web socket...')
-        self.close()
+        logger.info('Closing web socket...')        
         self._periodic.stop()
+        self.close()    
         try:
             self.application.settings['sockets'].remove(self)
         except ValueError:
             pass
+        finally:
+            self.cam.release()    
 
     @staticmethod
     def start(application):
@@ -117,26 +126,24 @@ class ImagePushStreamHandler(tornado.websocket.WebSocketHandler):
     @staticmethod
     def read_image_loop(application):
         """TBW."""
-        cam = application.settings['camera']
+        cam = ImagePushStreamHandler.cam
         while not ImagePushStreamHandler.stop_event.is_set():
             interval = float(ImagePushStreamHandler.interval) / 1000.0
-            if interval > 0:
-                if len(application.settings['sockets']):
+            if len(application.settings['sockets']):
+                if cam.isOpened():
                     image = cam.read_image()
                     for ws in application.settings['sockets']:
                         ws.images.append(image)
-                interval = 0.001
-            else:
-                interval = 1.0  # paused
-            time.sleep(interval)
+            time.sleep(interval)    
         logger.info('Exiting ImagePushStreamHandler.read_image_loop')
 
     async def _write_queue(self):
         """TBW."""
+        interval = float(ImagePushStreamHandler.interval) / 1000.0
         for _ in range(50):
             if self.images:
                 break
-            await asyncio.sleep(0.001)
+            await asyncio.sleep(interval)
 
         while self.images:
             image = self.images.pop()

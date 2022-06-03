@@ -19,8 +19,10 @@ def log_url(
         server: "tornado.httpserver.HTTPServer"
 ) -> None:
     """Log the URL to console that the server is associated with."""
-    port = list(server._sockets.values())[0].getsockname()[1]
-    url = "http://localhost:%s" % port
+    ip = list(server._sockets.values())[0].getsockname()
+    port = ip[1]
+    address = ip[0]
+    url = f'http://{address}:{port}'
     logging.log(100, "The web server is running at this URL: \n%s", url)
 
 
