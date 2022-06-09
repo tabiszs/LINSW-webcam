@@ -9,7 +9,7 @@ NAME=webcam
 DIR=/usr/$NAME
 PIDFILE=/var/run/$NAME.pid
 DAEMON=${DIR}/run.py
-DAEMON_ARGS="-p 8888 -a 192.168.145.252 --mode push"
+DAEMON_ARGS="-p 8888 -a 192.168.22.2 --mode push" #"-p 8888 -a 192.168.145.252 --mode push"
 STOP_SIGNAL=INT
 LOG=${DIR}/$NAME.log
 
