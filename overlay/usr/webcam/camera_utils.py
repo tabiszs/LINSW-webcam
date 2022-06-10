@@ -122,10 +122,6 @@ class WebCam(cv2.VideoCapture):
         filename = f'image_{date}.jpg'
         pathname = f'{path}/{filename}'
         im.save(pathname, 'JPEG')
-        #image = super.resize(image, (self.w, self.h))
-        # date = datetime.now()
-        # filename = f'{path}/image_{date}.jpg'
-        # cv2.imwrite('../photo/img_date.jpg', image)
         return filename
 
 
