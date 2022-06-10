@@ -5,7 +5,7 @@
 #
 
 NAME=localcam
-DIR=/usr/$NAME
+DIR=/usr/webcam
 PIDFILE=/var/run/$NAME.pid
 DAEMON=${DIR}/internal.py
 STOP_SIGNAL=INT
@@ -21,8 +21,6 @@ do_start(){
 
 do_stop(){
     start-stop-daemon --stop ${common_opts} --signal $STOP_SIGNAL --remove-pidfile
-    p=$(pidof ${NAME}.py)
-    kill $p
 }
 
 do_status(){
