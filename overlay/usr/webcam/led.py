@@ -14,6 +14,8 @@ class Led:
             self.line = 13
         elif type == 'photo' :
             self.line = 12
+        elif type == 'internal':
+            self.line = 11
         self.io = self._chip.get_line(self.line)
         self.io.request(consumer=type, type=gpiod.LINE_REQ_DIR_OUT)     
 
