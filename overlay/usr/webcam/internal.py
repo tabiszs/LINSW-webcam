@@ -7,7 +7,7 @@ import os
 import sys
 import gpiod
 import time
-from camera_utils import WebCam
+from fswebcam import WebCam
 from led import Led
 
 max_time=sys.maxsize #sec

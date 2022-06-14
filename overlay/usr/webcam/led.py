@@ -17,7 +17,8 @@ class Led:
         elif type == 'internal':
             self.line = 19
         self.io = self._chip.get_line(self.line)
-        self.io.request(consumer=type, type=gpiod.LINE_REQ_DIR_OUT)     
+        self.io.request(consumer=type, type=gpiod.LINE_REQ_DIR_OUT)
+        self.io.set_value(0)  
 
     def on(self):
         self.io.set_value(1)

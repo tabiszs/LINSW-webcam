@@ -8,29 +8,28 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-import camera_utils
+from fswebcam import WebCam
 import image_stream_handler
 import download_handler
 import tornado_utils
 __version__ = "0.6"
 
 @click.command()
-@click.option('-p', '--port', default=0, help='IP port used for the web server (default: 0)')
-@click.option('-a', '--address', default='0.0.0.0', help='IP address used for the web server (default: 0.0.0.0)')
+@click.option('-p', '--port', default=8888, help='IP port used for the web server (default: 8888)')
+@click.option('-a', '--address', default='192.168.145.15', help='IP address used for the web server (default:192.168.145.15)')
 @click.option('-v', '--verbosity', count=True, help='The verbosity level.')
 @click.option('-s', '--simulate', is_flag=True, help='Enable simulated camera.')
 @click.option('-m', '--mode',  default='push', type=click.Choice(['get', 'push']), help='The mode of operation (default: push).')
 @click.option('-v', '--verbosity', count=True, help='The verbosity level.')
 @click.version_option(version=__version__)
-def main(port=8888, address='0.0.0.0', simulate=False, mode='push', verbosity=0):
+def main(port=8888, address='192.168.145.15', simulate=False, mode='push', verbosity=0):
     """Tornado web server that streams webcam images over the network."""
     tornado_utils.config_logging(verbosity)
 
     pkg_dir = Path(__file__).absolute().parent
 
     camera_class = [
-        camera_utils.WebCam,
-        camera_utils.SimCam
+        WebCam,
     ][simulate]
 
     streamer_class = {

@@ -10,7 +10,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-from camera_utils import WebCam
+from fswebcam import WebCam
 from led import Led
 
 

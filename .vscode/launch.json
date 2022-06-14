@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "./overlay/usr/webcam/run.py",
             "console": "integratedTerminal",
-            "args": ["-p 8888", "--mode",  "push"],
+            "args": ["-p 9000", "--mode",  "push"],
             "justMyCode": true
         }
     ]
