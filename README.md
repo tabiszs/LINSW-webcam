@@ -1,4 +1,4 @@
-tornado-image-streamer
+Tornado-image-streamer
 ======================
 
 An image streamer over the Internet. A tornado backend is used to configure
